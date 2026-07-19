@@ -17,52 +17,41 @@ with sync_playwright() as p:
 
     page.wait_for_timeout(5000)
 
-    print("Changing origin...")
+    # Origin
+    page.locator("input").nth(0).click()
+    page.locator("input").nth(0).fill("DAR")
+    page.wait_for_timeout(2000)
+    page.keyboard.press("ArrowDown")
+    page.keyboard.press("Enter")
 
-    # Origin field
-    origin = page.locator("input").nth(0)
-    origin.click()
-    origin.fill("DAR")
+    page.wait_for_timeout(2000)
 
-    page.wait_for_timeout(3000)
-
-    # Select suggestion
+    # Destination
+    page.locator("input").nth(2).click()
+    page.locator("input").nth(2).fill("DEL")
+    page.wait_for_timeout(2000)
     page.keyboard.press("ArrowDown")
     page.keyboard.press("Enter")
 
     page.wait_for_timeout(3000)
 
+    print("Opening date picker")
 
-    print("Changing destination...")
-
-    # Destination field
-    destination = page.locator("input").nth(2)
-
-    destination.click()
-    destination.fill("DEL")
+    # Click departure field
+    page.locator("input").nth(4).click()
 
     page.wait_for_timeout(3000)
 
-    page.keyboard.press("ArrowDown")
-    page.keyboard.press("Enter")
+    print("Page text around date:")
+    text = page.locator("body").inner_text()
 
-
-    page.wait_for_timeout(3000)
-
-
-    print("Taking screenshot")
+    print(text[:2000])
 
     page.screenshot(
-        path="flight_form_test.png",
+        path="date_picker_test.png",
         full_page=True
     )
 
-
-    print("Current URL:")
-    print(page.url)
-
-
     browser.close()
 
-
-print("Test completed")
+print("Date test completed")
