@@ -1,0 +1,15 @@
+name: Test Telegram
+
+on:
+  workflow_dispatch:
+
+jobs:
+  send-message:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Telegram message
+        run: |
+          curl -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+          -d chat_id="${{ secrets.CHAT_ID }}" \
+          -d text="🚀 Flight Hunter is online!"
