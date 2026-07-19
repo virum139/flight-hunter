@@ -1,16 +1,7 @@
 from playwright.sync_api import sync_playwright
-import re
 import time
 
 print("Flight Hunter started")
-
-destinations = [
-    "DEL",
-    "BOM",
-    "BLR"
-]
-
-results = []
 
 with sync_playwright() as p:
 
@@ -18,29 +9,41 @@ with sync_playwright() as p:
 
     page = browser.new_page()
 
-    for destination in destinations:
+    page.goto(
+        "https://www.google.com/travel/flights",
+        wait_until="domcontentloaded",
+        timeout=60000
+    )
 
-        print("\n======================")
-        print(f"Checking DAR → {destination}")
-        print("======================")
+    page.wait_for_timeout(5000)
 
-        page.goto(
-            "https://www.google.com/travel/flights",
-            wait_until="domcontentloaded",
-            timeout=60000
+    inputs = page.locator("input")
+
+    print("Total inputs:", inputs.count())
+
+    for i in range(inputs.count()):
+
+        element = inputs.nth(i)
+
+        print("----------------")
+        print("INPUT", i)
+
+        print(
+            "Placeholder:",
+            element.get_attribute("placeholder")
         )
 
-        page.wait_for_timeout(5000)
+        print(
+            "Value:",
+            element.input_value()
+        )
 
-        print("Google Flights opened")
+        print(
+            "Type:",
+            element.get_attribute("type")
+        )
 
-        # Click first input
-        inputs = page.locator("input")
-
-        print("Inputs found:", inputs.count())
-
-        time.sleep(2)
 
     browser.close()
 
-print("Test completed")
+print("Inspection completed")
