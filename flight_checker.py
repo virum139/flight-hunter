@@ -5,17 +5,15 @@ print("Flight Hunter started")
 
 origin = "DAR"
 destination = "DEL"
+date = "2026-09-01"
 
-departure_date = "2026-09-01"
-
-google_flights_url = (
+# Google Flights one-way search URL
+url = (
     "https://www.google.com/travel/flights?"
-    f"q={quote(origin)}%20to%20{quote(destination)}%20"
-    f"on%20{quote(departure_date)}"
+    f"q={quote('Flights from ' + origin + ' to ' + destination)}"
 )
 
-print("Opening:")
-print(google_flights_url)
+print(url)
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
@@ -23,26 +21,20 @@ with sync_playwright() as p:
     page = browser.new_page()
 
     page.goto(
-        google_flights_url,
+        url,
         wait_until="domcontentloaded",
         timeout=60000
     )
 
     page.wait_for_timeout(10000)
 
-    print("Page title:")
+    print("Title:")
     print(page.title())
 
     text = page.locator("body").inner_text()
 
-    print("---- PAGE TEXT ----")
     print(text[:3000])
-
-    page.screenshot(
-        path="google_flights_search.png",
-        full_page=True
-    )
 
     browser.close()
 
-print("Search test completed")
+print("Completed")
