@@ -8,10 +8,7 @@ destination = "DEL"
 date = "2026-09-01"
 
 # Google Flights one-way search URL
-url = (
-    "https://www.google.com/travel/flights?"
-    f"q={quote('Flights from ' + origin + ' to ' + destination)}"
-)
+url = "https://www.google.com/travel/flights/search?tfs=CBwQAhojEgoyMDI2LTA5LTAxagwIAhIIL20vMDJjZHRyBwgBEgNERUxAAUgBcAGCAQsI____________AZgBAg"
 
 print(url)
 
