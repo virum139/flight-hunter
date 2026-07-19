@@ -28,9 +28,20 @@ with sync_playwright() as p:
     print("Title:")
     print(page.title())
 
-    text = page.locator("body").inner_text()
+    import re
 
-    print(text[:3000])
+text = page.locator("body").inner_text()
+
+prices = re.findall(r'\$(\d+)', text)
+
+prices = [int(p) for p in prices]
+
+if prices:
+    cheapest = min(prices)
+    print("Cheapest fare found:")
+    print("$" + str(cheapest))
+else:
+    print("No prices found")
 
     browser.close()
 
