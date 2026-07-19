@@ -3,29 +3,24 @@ import requests
 import os
 from datetime import datetime
 
-
 TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
-
 
 routes = [
     ("DEL", "New Delhi"),
     ("BOM", "Mumbai")
 ]
 
-
 travel_date = "2026-09-01"
 
 
 def send_photo(file_path, caption):
 
-    url = (
-        f"https://api.telegram.org/bot{TOKEN}/sendPhoto"
-    )
+    url = f"https://api.telegram.org/bot{TOKEN}/sendPhoto"
 
     with open(file_path, "rb") as photo:
 
-        requests.post(
+        response = requests.post(
             url,
             files={
                 "photo": photo
@@ -36,9 +31,21 @@ def send_photo(file_path, caption):
             }
         )
 
+    print("--------------------------------")
+    print("Telegram Status Code:", response.status_code)
+    print("Telegram Response:")
+    print(response.text)
+    print("--------------------------------")
 
+    if response.status_code == 200:
+        print("Telegram notification sent successfully.")
+    else:
+        print("Telegram notification FAILED.")
+
+
+print("===================================")
 print("Flight Hunter Started")
-
+print("===================================")
 
 with sync_playwright() as p:
 
@@ -46,23 +53,19 @@ with sync_playwright() as p:
         headless=True
     )
 
-
     page = browser.new_page(
         viewport={
-            "width":1920,
-            "height":1080
+            "width": 1920,
+            "height": 1080
         }
     )
 
-
     for code, name in routes:
 
-
-        print("====================")
-        print(
-            f"Checking DAR → {code}"
-        )
-
+        print()
+        print("===================================")
+        print(f"Checking DAR → {code}")
+        print("===================================")
 
         url = (
             "https://www.google.com/travel/flights?"
@@ -70,9 +73,8 @@ with sync_playwright() as p:
             f"%20on%20{travel_date}"
         )
 
-
+        print("Opening:")
         print(url)
-
 
         page.goto(
             url,
@@ -80,47 +82,45 @@ with sync_playwright() as p:
             timeout=60000
         )
 
+        print("Waiting for page to load...")
 
         page.wait_for_timeout(30000)
 
-
         filename = (
-            f"{code}_{datetime.now().strftime('%Y%m%d_%H%M')}.png"
+            f"{code}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
         )
 
+        print("Taking screenshot...")
 
         page.screenshot(
             path=filename,
             full_page=False
         )
 
+        print("Screenshot saved:", filename)
 
-        send_photo(
-            filename,
-            f"""
-✈️ Flight Hunter
+        caption = f"""✈️ Flight Hunter
 
 DAR → {name} ({code})
 
-One way
-Travel date:
+One Way
+
+Travel Date:
 01 September 2026
 
 Checked:
-{datetime.now().strftime('%d-%m-%Y %H:%M')}
+{datetime.now().strftime('%d-%m-%Y %H:%M:%S')}
 
-Google Flights screenshot
-"""
+Google Flights Screenshot"""
+
+        send_photo(
+            filename,
+            caption
         )
-
-
-        print(
-            "Sent:",
-            filename
-        )
-
 
     browser.close()
 
-
-print("Completed")
+print()
+print("===================================")
+print("Flight Hunter Completed")
+print("===================================")
