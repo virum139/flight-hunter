@@ -32,9 +32,9 @@ with sync_playwright() as p:
     print("Searching prices...")
 
     # Find USD prices
-    prices = re.findall(r'\$(\d+)', text)
+    prices = re.findall(r'\$(\d{3,5})', text)
 
-    prices = [int(p) for p in prices]
+prices = [int(p) for p in prices if int(p) >= 100]
 
     if prices:
         cheapest = min(prices)
