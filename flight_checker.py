@@ -17,33 +17,52 @@ with sync_playwright() as p:
 
     page.wait_for_timeout(5000)
 
-    inputs = page.locator("input")
+    print("Changing origin...")
 
-    print("Total inputs:", inputs.count())
+    # Origin field
+    origin = page.locator("input").nth(0)
+    origin.click()
+    origin.fill("DAR")
 
-    for i in range(inputs.count()):
+    page.wait_for_timeout(3000)
 
-        element = inputs.nth(i)
+    # Select suggestion
+    page.keyboard.press("ArrowDown")
+    page.keyboard.press("Enter")
 
-        print("----------------")
-        print("INPUT", i)
+    page.wait_for_timeout(3000)
 
-        print(
-            "Placeholder:",
-            element.get_attribute("placeholder")
-        )
 
-        print(
-            "Value:",
-            element.input_value()
-        )
+    print("Changing destination...")
 
-        print(
-            "Type:",
-            element.get_attribute("type")
-        )
+    # Destination field
+    destination = page.locator("input").nth(2)
+
+    destination.click()
+    destination.fill("DEL")
+
+    page.wait_for_timeout(3000)
+
+    page.keyboard.press("ArrowDown")
+    page.keyboard.press("Enter")
+
+
+    page.wait_for_timeout(3000)
+
+
+    print("Taking screenshot")
+
+    page.screenshot(
+        path="flight_form_test.png",
+        full_page=True
+    )
+
+
+    print("Current URL:")
+    print(page.url)
 
 
     browser.close()
 
-print("Inspection completed")
+
+print("Test completed")
