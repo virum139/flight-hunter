@@ -7,12 +7,25 @@ with sync_playwright() as p:
 
     page = browser.new_page()
 
-    page.goto("https://www.skyscanner.net")
+    page.goto(
+        "https://www.skyscanner.net",
+        wait_until="networkidle",
+        timeout=60000
+    )
 
-    print("Opened Skyscanner")
+    print("Page loaded")
 
-    print("Page title:")
+    print("Title:")
     print(page.title())
+
+    text = page.locator("body").inner_text()
+
+    print(text[:2000])
+
+    page.screenshot(
+        path="skyscanner_test.png",
+        full_page=True
+    )
 
     browser.close()
 
