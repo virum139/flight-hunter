@@ -20,23 +20,24 @@ with sync_playwright() as p:
         timeout=60000
     )
 
-    # Allow Google Flights results to load
+    # Wait for flight results
     page.wait_for_timeout(10000)
 
     print("Page title:")
     print(page.title())
 
-    # Read page text
+    # Get page text
     text = page.locator("body").inner_text()
 
     print("Searching prices...")
 
-    # Find USD prices
+    # Extract realistic flight prices only
     prices = re.findall(r'\$(\d{3,5})', text)
 
-prices = [int(p) for p in prices if int(p) >= 100]
+    prices = [int(p) for p in prices if int(p) >= 100]
 
     if prices:
+
         cheapest = min(prices)
 
         print("----------------------")
@@ -47,7 +48,7 @@ prices = [int(p) for p in prices if int(p) >= 100]
     else:
         print("No prices found")
 
-    # Save screenshot for checking
+    # Save screenshot for debugging
     page.screenshot(
         path="google_flights_result.png",
         full_page=True
