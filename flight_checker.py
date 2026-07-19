@@ -6,32 +6,46 @@ import urllib.parse
 print("Flight Hunter started")
 
 origin = "DAR"
+date = "2026-09-01"
 
-# Indian destinations to check
+# Major Indian airports
 destinations = [
     "DEL",
     "BOM",
-    "JAI",
-    "AMD",
-    "PAT",
     "BLR",
     "HYD",
-    "MAA"
+    "MAA",
+    "CCU",
+    "AMD",
+    "JAI",
+    "PAT",
+    "LKO",
+    "COK",
+    "PNQ",
+    "GOI",
+    "TRV",
+    "GAU",
+    "IXC",
+    "IXB",
+    "NAG",
+    "BBI",
+    "IXR"
 ]
 
 results = []
 
 
-def create_google_flights_url(destination):
+def make_url(destination):
 
-    query = f"Flights from {origin} to {destination}"
+    query = (
+        f"Flights from {origin} to {destination} "
+        f"on {date}"
+    )
 
-    url = (
+    return (
         "https://www.google.com/travel/flights?"
         f"q={urllib.parse.quote(query)}"
     )
-
-    return url
 
 
 with sync_playwright() as p:
@@ -43,10 +57,10 @@ with sync_playwright() as p:
     for destination in destinations:
 
         print("\n======================")
-        print(f"Checking {destination}")
+        print(f"Checking {origin} → {destination}")
         print("======================")
 
-        url = create_google_flights_url(destination)
+        url = make_url(destination)
 
         print(url)
 
@@ -58,20 +72,21 @@ with sync_playwright() as p:
                 timeout=60000
             )
 
-            page.wait_for_timeout(10000)
+            # Wait for Google Flights results
+            page.wait_for_timeout(12000)
 
             text = page.locator("body").inner_text()
 
-            # Find realistic flight prices
+            # Extract realistic flight prices
             prices = re.findall(
                 r'\$(\d{3,5})',
                 text
             )
 
             prices = [
-                int(price)
-                for price in prices
-                if int(price) >= 100
+                int(x)
+                for x in prices
+                if 100 <= int(x) <= 5000
             ]
 
             if prices:
@@ -83,23 +98,22 @@ with sync_playwright() as p:
                 )
 
                 results.append(
-                    {
-                        "city": destination,
-                        "price": cheapest
-                    }
+                    (
+                        destination,
+                        cheapest
+                    )
                 )
 
             else:
 
                 print(
-                    f"{destination}: No price found"
+                    f"{destination}: No fare found"
                 )
-
 
         except Exception as e:
 
             print(
-                f"{destination}: Error {e}"
+                f"{destination}: Error"
             )
 
 
@@ -109,10 +123,11 @@ with sync_playwright() as p:
     browser.close()
 
 
+
 if results:
 
     results.sort(
-        key=lambda x: x["price"]
+        key=lambda x: x[1]
     )
 
     print("\n======================")
@@ -120,23 +135,20 @@ if results:
     print("======================")
 
     print(
-        "Route: DAR → "
-        + results[0]["city"]
+        f"DAR → {results[0][0]}"
     )
 
     print(
-        "Price: USD "
-        + str(results[0]["price"])
+        f"USD {results[0][1]}"
     )
 
-    print("\nAll results:")
+    print("\nAll fares:")
 
-    for result in results:
-
+    for city, price in results:
         print(
-            result["city"],
+            city,
             "USD",
-            result["price"]
+            price
         )
 
 else:
