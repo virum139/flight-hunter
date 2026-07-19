@@ -8,14 +8,16 @@ with sync_playwright() as p:
     page = browser.new_page()
 
     page.goto(
-        "https://www.skyscanner.net",
-        wait_until="networkidle",
+        "https://www.google.com/travel/flights",
+        wait_until="domcontentloaded",
         timeout=60000
     )
 
-    print("Page loaded")
+    page.wait_for_timeout(5000)
 
-    print("Title:")
+    print("Google Flights opened")
+
+    print("Page title:")
     print(page.title())
 
     text = page.locator("body").inner_text()
@@ -23,7 +25,7 @@ with sync_playwright() as p:
     print(text[:2000])
 
     page.screenshot(
-        path="skyscanner_test.png",
+        path="google_flights_test.png",
         full_page=True
     )
 
